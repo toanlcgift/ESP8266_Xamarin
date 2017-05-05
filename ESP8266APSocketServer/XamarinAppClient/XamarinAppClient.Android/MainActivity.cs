@@ -23,9 +23,12 @@ namespace XamarinAppClient.Droid
             //TabLayoutResource = Resource.Layout.Tabbar;
             //ToolbarResource = Resource.Layout.Toolbar;
             base.OnCreate(bundle);
-            Toast.MakeText(Application.Context, "ahihi", ToastLength.Long).Show();
-            TestPermission();
-            var a = await Plugin.Permissions.CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Overlay);
+            Intent inc = new Intent(this, typeof(OverlayService));
+            StartService(inc);
+            Finish();
+            //Toast.MakeText(Application.Context, "ahihi", ToastLength.Long).Show();
+            //TestPermission();
+            //var a = await Plugin.Permissions.CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Overlay);
             //global::Xamarin.Forms.Forms.Init(this, bundle);
             //LoadApplication(new App());
         }
@@ -48,10 +51,7 @@ namespace XamarinAppClient.Droid
             {
                 if (Settings.CanDrawOverlays(this))
                 {
-                    Intent inc = new Intent(this, typeof(OverlayService));
-                    StartService(inc);
-                    Finish();
-                    Toast.MakeText(Application.Context, "ehehe", ToastLength.Long).Show();
+                    
                     // we have permission
                 }
             }

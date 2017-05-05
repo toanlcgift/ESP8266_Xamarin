@@ -41,43 +41,33 @@ namespace XamarinAppClient.Droid
         public override void OnCreate()
         {
             base.OnCreate();
-            
+            //Toast.MakeText(Application.Context, "line 44", ToastLength.Long).Show();
             wm = this.GetSystemService(Context.WindowService).JavaCast<IWindowManager>();
             overlayedButton = new Button(this);
             overlayedButton.SetText("Overlay button", TextView.BufferType.Normal);
             overlayedButton.SetOnTouchListener(this);
             overlayedButton.SetTextColor(Color.Red);
-            overlayedButton.Alpha = 0.0f;
+            overlayedButton.Alpha = 10.0f;
             overlayedButton.SetBackgroundColor(Android.Graphics.Color.Green);
-            overlayedButton.SetOnClickListener(this);
+            overlayedButton.SetHeight(50);
+            overlayedButton.SetWidth(50);
+            overlayedButton.Click += OverlayedButton_Click;
             var param = new WindowManagerLayoutParams(
-                    ViewGroup.LayoutParams.MatchParent,
-                    ViewGroup.LayoutParams.MatchParent,
+                    WindowManagerLayoutParams.WrapContent,
+                    WindowManagerLayoutParams.WrapContent,
                     WindowManagerTypes.SystemOverlay,
-                    WindowManagerFlags.Fullscreen | WindowManagerFlags.WatchOutsideTouch | WindowManagerFlags.AllowLockWhileScreenOn | WindowManagerFlags.NotTouchable | WindowManagerFlags.NotFocusable,
+                    WindowManagerFlags.Fullscreen | WindowManagerFlags.WatchOutsideTouch | WindowManagerFlags.AllowLockWhileScreenOn | WindowManagerFlags.NotTouchModal | WindowManagerFlags.NotFocusable,
                     Android.Graphics.Format.Translucent);
             param.Gravity = GravityFlags.Left | GravityFlags.Top;
-            param.X = 0;
-            param.Y = 0;
+            param.X = 150;
+            param.Y = 300;
             wm.AddView(overlayedButton, param);
+            Toast.MakeText(Application.Context, "add button done", ToastLength.Long).Show();
+        }
 
-
-
-            var param2 = new WindowManagerLayoutParams(
-                    ViewGroup.LayoutParams.MatchParent,
-                    ViewGroup.LayoutParams.MatchParent,
-                    WindowManagerTypes.SystemOverlay,
-                    WindowManagerFlags.Fullscreen | WindowManagerFlags.WatchOutsideTouch | WindowManagerFlags.AllowLockWhileScreenOn | WindowManagerFlags.NotTouchable | WindowManagerFlags.NotFocusable,
-                    Android.Graphics.Format.Translucent);
-
-            param2.Gravity = GravityFlags.Left | GravityFlags.Top;
-            param2.X = 0;
-            param2.Y = 0;
-            param2.Width = 0;
-            param2.Height = 0;
-
-            topLeftView = new View(this);
-            wm.AddView(topLeftView, param2);
+        private void OverlayedButton_Click(object sender, EventArgs e)
+        {
+            Toast.MakeText(Application.Context, "Click", ToastLength.Long).Show();
         }
 
         public override void OnDestroy()

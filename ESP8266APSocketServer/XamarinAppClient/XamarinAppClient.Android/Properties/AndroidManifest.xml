@@ -4,5 +4,7 @@
 	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 	<uses-permission android:name="android.permission.INTERNAL_SYSTEM_WINDOW" />
 	<uses-permission android:name="android.permission.CAMERA" />
-	<application android:label="XamarinAppClient.Android" android:icon="@drawable/icon"></application>
+	<application android:label="XamarinAppClient.Android" android:icon="@drawable/icon">
+    <service android:name="OverlayService" />
+  </application>
 </manifest>
