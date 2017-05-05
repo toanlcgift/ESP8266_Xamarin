@@ -8,6 +8,8 @@ using Android.Widget;
 using Android.OS;
 using Android.Content;
 using Android.Graphics;
+using Plugin.Permissions;
+using Android.Provider;
 
 namespace XamarinAppClient.Droid
 {
@@ -16,18 +18,50 @@ namespace XamarinAppClient.Droid
     {
         int count = 1;
         Bitmap myBitmap;
-        protected override void OnCreate(Bundle bundle)
+        protected override async void OnCreate(Bundle bundle)
         {
             //TabLayoutResource = Resource.Layout.Tabbar;
             //ToolbarResource = Resource.Layout.Toolbar;
-
             base.OnCreate(bundle);
-
-            Intent inc = new Intent(this, typeof(OverlayService));
-            StartService(inc);
-            Finish();
+            Toast.MakeText(Application.Context, "ahihi", ToastLength.Long).Show();
+            TestPermission();
+            var a = await Plugin.Permissions.CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Overlay);
             //global::Xamarin.Forms.Forms.Init(this, bundle);
             //LoadApplication(new App());
+        }
+
+        private const int RequestCode = 5469;
+
+        private void TestPermission()
+        {
+            if (Build.VERSION.SdkInt < BuildVersionCodes.M) return;
+            if (!Settings.CanDrawOverlays(this)) return;
+
+            var intent = new Intent(Settings.ActionManageOverlayPermission);
+            intent.SetPackage(PackageName);
+            StartActivityForResult(intent, RequestCode);
+        }
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            if (requestCode == RequestCode)
+            {
+                if (Settings.CanDrawOverlays(this))
+                {
+                    Intent inc = new Intent(this, typeof(OverlayService));
+                    StartService(inc);
+                    Finish();
+                    Toast.MakeText(Application.Context, "ehehe", ToastLength.Long).Show();
+                    // we have permission
+                }
+            }
+
+            base.OnActivityResult(requestCode, resultCode, data);
+        }
+
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+        {
+            PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 }

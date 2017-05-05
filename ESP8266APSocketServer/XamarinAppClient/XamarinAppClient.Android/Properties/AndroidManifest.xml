@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="xamarinappclient.android">
 	<uses-sdk android:minSdkVersion="23" />
 	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-	<application android:label="XamarinAppClient.Android">
-		<service android:name="xamarinappclient.android.OverlayService" />
-	</application>
+	<uses-permission android:name="android.permission.INTERNAL_SYSTEM_WINDOW" />
+	<uses-permission android:name="android.permission.CAMERA" />
+	<application android:label="XamarinAppClient.Android" android:icon="@drawable/icon"></application>
 </manifest>
