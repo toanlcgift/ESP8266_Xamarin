@@ -16,16 +16,17 @@ using static Android.Manifest;
 using Android.Support.V4.App;
 using System.Threading.Tasks;
 using Plugin.Permissions.Abstractions;
+using System.Net.Http;
 
 namespace XamarinAppClient.Droid
 {
     [Service(Label = "OverlayService", Exported = true)]
     public class OverlayService : Service, IOnTouchListener, IOnClickListener
     {
-
-        private View topLeftView;
-
-        private Button overlayedButton;
+        bool LightFlag = true;
+        bool Doing = false;
+        HttpClient hc = new HttpClient();
+        private ImageButton overlayedButton;
         private float offsetX;
         private float offsetY;
         private int originalXPos;
@@ -41,33 +42,25 @@ namespace XamarinAppClient.Droid
         public override void OnCreate()
         {
             base.OnCreate();
-            //Toast.MakeText(Application.Context, "line 44", ToastLength.Long).Show();
+            hc.BaseAddress = new Uri("http://192.168.1.69");
             wm = this.GetSystemService(Context.WindowService).JavaCast<IWindowManager>();
-            overlayedButton = new Button(this);
-            overlayedButton.SetText("Overlay button", TextView.BufferType.Normal);
+            overlayedButton = new ImageButton(this);
+            overlayedButton.SetImageResource(Resource.Drawable.Light);
+            overlayedButton.SetBackgroundColor(Color.Transparent);
+            overlayedButton.SetColorFilter(Color.Black);
             overlayedButton.SetOnTouchListener(this);
-            overlayedButton.SetTextColor(Color.Red);
-            overlayedButton.Alpha = 10.0f;
-            overlayedButton.SetBackgroundColor(Android.Graphics.Color.Green);
-            overlayedButton.SetHeight(50);
-            overlayedButton.SetWidth(50);
-            overlayedButton.Click += OverlayedButton_Click;
+            overlayedButton.SetOnClickListener(this);
             var param = new WindowManagerLayoutParams(
                     WindowManagerLayoutParams.WrapContent,
                     WindowManagerLayoutParams.WrapContent,
-                    WindowManagerTypes.SystemOverlay,
-                    WindowManagerFlags.Fullscreen | WindowManagerFlags.WatchOutsideTouch | WindowManagerFlags.AllowLockWhileScreenOn | WindowManagerFlags.NotTouchModal | WindowManagerFlags.NotFocusable,
-                    Android.Graphics.Format.Translucent);
+                    //WindowManagerTypes.SystemOverlay,
+                    WindowManagerTypes.SystemAlert,
+                    WindowManagerFlags.Fullscreen | WindowManagerFlags.WatchOutsideTouch | WindowManagerFlags.AllowLockWhileScreenOn | WindowManagerFlags.NotTouchModal | WindowManagerFlags.LayoutInScreen,
+                    Android.Graphics.Format.Transparent);
             param.Gravity = GravityFlags.Left | GravityFlags.Top;
             param.X = 150;
             param.Y = 300;
             wm.AddView(overlayedButton, param);
-            Toast.MakeText(Application.Context, "add button done", ToastLength.Long).Show();
-        }
-
-        private void OverlayedButton_Click(object sender, EventArgs e)
-        {
-            Toast.MakeText(Application.Context, "Click", ToastLength.Long).Show();
         }
 
         public override void OnDestroy()
@@ -76,16 +69,42 @@ namespace XamarinAppClient.Droid
             if (overlayedButton != null)
             {
                 wm.RemoveView(overlayedButton);
-                wm.RemoveView(topLeftView);
                 overlayedButton = null;
-                topLeftView = null;
             }
         }
 
-        public void OnClick(View v)
+        public async void OnClick(View v)
         {
-            var toast = Toast.MakeText(Application.Context, "ahihi", ToastLength.Long);
-            toast.Show();
+            if (!Doing)
+            {
+                Doing = true;
+                if (LightFlag)
+                {
+                    try
+                    {
+                        overlayedButton.SetColorFilter(Color.Yellow);
+                        hc.GetAsync("/1");
+                        await Task.Delay(200);
+                        hc.CancelPendingRequests();
+                    }
+                    catch { }
+                    
+                }
+                else
+                {
+                    try
+                    {
+                        overlayedButton.SetColorFilter(Color.Black);
+                        hc.GetAsync("/0");
+                        await Task.Delay(200);
+                        hc.CancelPendingRequests();
+                    }
+                    catch { }
+                    
+                }
+                LightFlag = !LightFlag;
+                Doing = false;
+            }
         }
 
         public bool OnTouch(View v, MotionEvent e)
@@ -110,15 +129,14 @@ namespace XamarinAppClient.Droid
             else if (e.Action == MotionEventActions.Move)
             {
                 int[] topLeftLocationOnScreen = new int[2];
-                topLeftView.GetLocationOnScreen(topLeftLocationOnScreen);
 
                 float x = e.RawX;
                 float y = e.RawY;
 
                 var param = (WindowManagerLayoutParams)overlayedButton.LayoutParameters;
 
-                int newX = (int)(offsetX + x);
-                int newY = (int)(offsetY + y);
+                int newX = (int)(offsetX + x - overlayedButton.Width / 2);
+                int newY = (int)(offsetY + y - overlayedButton.Height / 2);
 
                 if (Math.Abs(newX - originalXPos) < 1 && Math.Abs(newY - originalYPos) < 1 && !moving)
                 {

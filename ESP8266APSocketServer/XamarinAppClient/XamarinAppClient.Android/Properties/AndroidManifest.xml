@@ -3,8 +3,8 @@
 	<uses-sdk android:minSdkVersion="23" />
 	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 	<uses-permission android:name="android.permission.INTERNAL_SYSTEM_WINDOW" />
-	<uses-permission android:name="android.permission.CAMERA" />
+	<uses-permission android:name="android.permission.INTERNET" />
 	<application android:label="XamarinAppClient.Android" android:icon="@drawable/icon">
-    <service android:name="OverlayService" />
-  </application>
+		<service android:name="OverlayService" />
+	</application>
 </manifest>

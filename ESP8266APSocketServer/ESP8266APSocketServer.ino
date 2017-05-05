@@ -153,8 +153,14 @@ void handleNotFound()
 		message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
 	}
 	server.send(404, "text/plain", message);
-	LEDStatus = !LEDStatus;
-	writeLED(LEDStatus);
+}
+
+void handleTurnOn() {
+	writeLED(true);
+}
+
+void handleTurnOff() {
+	writeLED(false);
 }
 
 static void writeLED(bool LEDon)
@@ -162,10 +168,10 @@ static void writeLED(bool LEDon)
 	LEDStatus = LEDon;
 	// Note inverted logic for Adafruit HUZZAH board
 	if (LEDon) {
-		digitalWrite(LEDPIN, 0);
+		digitalWrite(LEDPIN, 1);
 	}
 	else {
-		digitalWrite(LEDPIN, 1);
+		digitalWrite(LEDPIN, 0);
 	}
 }
 
@@ -211,6 +217,8 @@ void setup()
 	Serial.println(WiFi.localIP());
 
 	server.on("/", handleRoot);
+	server.on("/1", handleTurnOn);
+	server.on("/0", handleTurnOff);
 	server.onNotFound(handleNotFound);
 
 	server.begin();
