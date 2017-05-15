@@ -223,7 +223,7 @@ namespace XamarinAppClient.Droid
 
         public bool OnLongClick(View v)
         {
-            this.OnDestroy();
+            //this.OnDestroy();
             return true;
         }
 
