@@ -27,7 +27,7 @@ using System.Threading;
 namespace XamarinAppClient.Droid
 {
     [Service(Label = "OverlayService", Exported = true)]
-    public class OverlayService : Service, IOnTouchListener, IOnClickListener
+    public class OverlayService : Service, IOnTouchListener, IOnClickListener, IOnLongClickListener
     {
 
         public class Myb2Listener : b2ContactListener
@@ -75,10 +75,11 @@ namespace XamarinAppClient.Droid
             overlayedButton.SetBackgroundColor(Color.Transparent);
             overlayedButton.SetColorFilter(Color.White);
 
-            overlayedButton.ScaleX = 0.5f;
-            overlayedButton.ScaleY = 0.5f;
+            overlayedButton.ScaleX = 0.7f;
+            overlayedButton.ScaleY = 0.7f;
             overlayedButton.SetOnTouchListener(this);
             overlayedButton.SetOnClickListener(this);
+            overlayedButton.SetOnLongClickListener(this);
             var param = new WindowManagerLayoutParams(
                     WindowManagerLayoutParams.WrapContent,
                     WindowManagerLayoutParams.WrapContent,
@@ -96,7 +97,7 @@ namespace XamarinAppClient.Droid
             param.X = 100;
             param.Y = 150;
             wm.AddView(overlayedButton, param);
-            System.Timers.Timer timer = new System.Timers.Timer(2);
+            System.Timers.Timer timer = new System.Timers.Timer(5);
 
             timer.Elapsed += (o, e) =>
             {
@@ -220,6 +221,12 @@ namespace XamarinAppClient.Droid
             return false;
         }
 
+        public bool OnLongClick(View v)
+        {
+            this.OnDestroy();
+            return true;
+        }
+
         private void InitB2World()
         {
             world = new Box2D.Dynamics.b2World(new Box2D.Common.b2Vec2(0, -100));
@@ -294,5 +301,7 @@ namespace XamarinAppClient.Droid
             });
             world.Dump();
         }
+
+
     }
 }
