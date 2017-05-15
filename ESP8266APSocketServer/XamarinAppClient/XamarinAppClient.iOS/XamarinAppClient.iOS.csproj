@@ -143,6 +143,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\box2d\box2d.iOS.csproj">
+      <Project>{7877d4f9-f781-465a-9c1f-d113f246a994}</Project>
+      <Name>box2d.iOS</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
     <ProjectReference Include="..\XamarinAppClient\XamarinAppClient.csproj">
       <Project>{2e34b068-c734-4e2c-9d57-4736c1cfd4e2}</Project>
       <Name>XamarinAppClient</Name>

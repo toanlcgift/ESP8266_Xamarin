@@ -21,6 +21,8 @@
 #include <Hash.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include <EEPROM\EEPROM.h>
+#include <DNSServer.h>
 
 static const char ssid[] = "ESP8266AccessPoint";
 static const char password[] = "123456789";
@@ -30,6 +32,7 @@ static void writeLED(bool);
 
 ESP8266WebServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
+DNSServer dnsServer;
 
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 <!DOCTYPE html>
@@ -187,6 +190,7 @@ void setup()
 	Serial.println();
 	Serial.println();
 	Serial.println();
+	
 
 	for (uint8_t t = 4; t > 0; t--) {
 		Serial.printf("[SETUP] BOOT WAIT %d...\r\n", t);
@@ -194,6 +198,7 @@ void setup()
 		delay(1000);
 	}
 
+	
 	WiFi.softAP(ssid, password);
 	WiFi.softAPConfig(IPAddress(192, 168, 1, 69), IPAddress(192, 168, 1, 1), IPAddress(255, 255, 255, 0));
 	WiFi.config(IPAddress(192, 168, 1, 69), IPAddress(192, 168, 1, 1), IPAddress(255, 255, 255, 0));
@@ -204,6 +209,9 @@ void setup()
 	Serial.println(ssid);
 	Serial.print("IP address: ");
 	Serial.println(WiFi.localIP());
+	dnsServer.setTTL(300);
+	dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
+	dnsServer.start(69, "ahihi", WiFi.localIP());
 
 	if (mdns.begin("espWebSock", IPAddress(192, 168, 1, 69))) {
 		Serial.println("MDNS responder started");
